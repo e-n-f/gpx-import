@@ -36,49 +36,55 @@
 int
 main(int argc, char **argv)
 {
-  DBJob j;
-  j.error = NULL;
-  DBJob *job = &j;
-  GPX *g;
-  g = gpx_parse_file(argv[1], &(job->error));
-      
-  if (g != NULL && job->error == NULL && g->goodpoints > 0) {
-    INFO("GPX contained %d good point(s) and %d bad point(s)", g->goodpoints, g->badpoints);
-    if (g->badpoints > 0) {
-      INFO("%d missed <time>, %d had bad latitude, %d had bad longitude",
-           g->missed_time, g->bad_lat, g->bad_long);
-    }
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s file.gpx ...\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
 
-    GPXTrackPoint *pt = g->points;
-    GPXTrackPoint *prev = NULL;
-    while (pt != NULL) {
-      if (prev != NULL && pt->segment != prev->segment) {
-        prev = NULL;
-      }
-
-      if (prev != NULL) {
-        printf("%.7f,%.7f %.7f,%.7f\n",
-                prev->latitude / 1000000000.0,
-                prev->longitude / 1000000000.0,
-                pt->latitude / 1000000000.0,
-                pt->longitude / 1000000000.0);
-      }
-
-      prev = pt;
-      pt = pt->next;
-    }
-  } else {
-    if (job->error == NULL) {
+  int i;
+  for (i = 1; i < argc; i++) {
+    GPX *g;
+    char *error = NULL;
+    g = gpx_parse_file(argv[i], &error);
+        
+    if (g != NULL && error == NULL && g->goodpoints > 0) {
+      INFO("GPX contained %d good point(s) and %d bad point(s)", g->goodpoints, g->badpoints);
       if (g->badpoints > 0) {
         INFO("%d missed <time>, %d had bad latitude, %d had bad longitude",
              g->missed_time, g->bad_lat, g->bad_long);
       }
-      if (g->goodpoints > 0) {
-        job->error = strdup("XML failure while parsing GPX data");
-        ERROR("Failure while parsing GPX");
-      } else {
-        job->error = strdup("Unable to find any good GPX track points");
-        ERROR("No good points found");
+
+      GPXTrackPoint *pt = g->points;
+      GPXTrackPoint *prev = NULL;
+      while (pt != NULL) {
+        if (prev != NULL && pt->segment != prev->segment) {
+          prev = NULL;
+        }
+
+        if (prev != NULL) {
+          printf("%.7f,%.7f %.7f,%.7f\n",
+                  prev->latitude / 1000000000.0,
+                  prev->longitude / 1000000000.0,
+                  pt->latitude / 1000000000.0,
+                  pt->longitude / 1000000000.0);
+        }
+
+        prev = pt;
+        pt = pt->next;
+      }
+
+      gpx_free(g);
+    } else {
+      if (error == NULL) {
+        if (g->badpoints > 0) {
+          INFO("%d missed <time>, %d had bad latitude, %d had bad longitude",
+               g->missed_time, g->bad_lat, g->bad_long);
+        }
+        if (g->goodpoints > 0) {
+          ERROR("Failure while parsing GPX");
+        } else {
+          ERROR("No good points found");
+        }
       }
     }
   }
