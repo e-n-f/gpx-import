@@ -40,12 +40,12 @@ log_reopen(void)
   if (!logfilename_initialised) {
     strncpy(logfilename, getenv("GPX_LOG_FILE") ? getenv("GPX_LOG_FILE") : "-", PATH_MAX);
     INFO("Initialising logfile '%s'", logfilename);
-    logfile = stdout;
+    logfile = stderr;
     logfilename_initialised = true;
   }
   if (strcmp(logfilename, "-") == 0)
     return;
-  if (logfile != stdout)
+  if (logfile != stderr)
     INFO("Rotating logfile");
   fclose(logfile);
   logfile = fopen(logfilename, "a");
@@ -83,7 +83,8 @@ _gpxlog(const char *level, const char *fmt, ...)
   vsnprintf(buffer + strlen(buffer), LOGBUFLEN - strlen(buffer) - 1, fmt, ap);
   va_end(ap);
   if (!logfilename_initialised) {
-    puts(buffer);
+    fputs(buffer, stderr);
+    fputc('\n', stderr);
   } else {
     fputs(buffer, logfile);
     fputc('\n', logfile);
