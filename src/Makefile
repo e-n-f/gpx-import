@@ -18,12 +18,6 @@ CFLAGS += -DNDEBUG
 # Get dep files
 CFLAGS += -MD
 
-CFLAGS += $(shell gdlib-config --cflags)
-LDFLAGS += $(shell gdlib-config --libs) -lgd 
-
-CFLAGS += $(shell pkg-config --cflags libmemcached)
-LDFLAGS += $(shell pkg-config --libs libmemcached)
-
 ifeq ($(DB),mysql)
 CFLAGS += $(shell mysql_config --cflags)
 LDFLAGS += $(shell mysql_config --libs)
@@ -34,7 +28,7 @@ CFLAGS += -I$(shell pg_config --includedir)
 LDFLAGS += -L$(shell pg_config --libdir) -lpq
 endif
 
-MAINOBJS := main.o gpx.o mercator.o image.o log.o db.o filename.o interpolate.o quadtile.o cache.o
+MAINOBJS := main.o gpx.o mercator.o log.o db.o filename.o interpolate.o quadtile.o
 
 ALLOBJS := $(DB).o $(MAINOBJS)
 
