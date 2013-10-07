@@ -50,12 +50,21 @@ main(int argc, char **argv)
     }
 
     GPXTrackPoint *pt = g->points;
+    GPXTrackPoint *prev = NULL;
     while (pt != NULL) {
-      printf("%.6f,%.6f %d\n",
-              pt->latitude / 1000000000.0,
-              pt->longitude / 1000000000.0,
-              pt->segment);
+      if (prev != NULL && pt->segment != prev->segment) {
+        prev = NULL;
+      }
 
+      if (prev != NULL) {
+        printf("%.7f,%.7f %.7f,%.7f\n",
+                prev->latitude / 1000000000.0,
+                prev->longitude / 1000000000.0,
+                pt->latitude / 1000000000.0,
+                pt->longitude / 1000000000.0);
+      }
+
+      prev = pt;
       pt = pt->next;
     }
   } else {
