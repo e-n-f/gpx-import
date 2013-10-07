@@ -5,7 +5,7 @@
 # Copyright 2008 Daniel Silverstone <dsilvers@digital-scurf.org>
 #
 
-all: gpx-import
+all: gpx-parse
 
 DB := mysql
 
@@ -32,11 +32,11 @@ MAINOBJS := main.o gpx.o log.o
 
 ALLOBJS := $(MAINOBJS)
 
-gpx-import: $(ALLOBJS)
+gpx-parse: $(ALLOBJS)
 	gcc -o $@ $^ -lexpat -larchive -lz -lbz2 $(LDFLAGS)
 
 clean:
-	$(RM) *.o gpx-import *.d
+	$(RM) *.o gpx-parse *.d
 
 distclean: clean
 	$(RM) *~
