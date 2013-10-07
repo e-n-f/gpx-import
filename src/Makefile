@@ -28,9 +28,9 @@ CFLAGS += -I$(shell pg_config --includedir)
 LDFLAGS += -L$(shell pg_config --libdir) -lpq
 endif
 
-MAINOBJS := main.o gpx.o mercator.o log.o db.o filename.o interpolate.o quadtile.o
+MAINOBJS := main.o gpx.o log.o
 
-ALLOBJS := $(DB).o $(MAINOBJS)
+ALLOBJS := $(MAINOBJS)
 
 gpx-import: $(ALLOBJS)
 	gcc -o $@ $^ -lexpat -larchive -lz -lbz2 $(LDFLAGS)
