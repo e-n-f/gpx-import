@@ -43,6 +43,8 @@ main(int argc, char **argv)
 
   int i;
   for (i = 1; i < argc; i++) {
+    INFO("GPX file %s", argv[i]);
+
     GPX *g;
     char *error = NULL;
     g = gpx_parse_file(argv[i], &error);
