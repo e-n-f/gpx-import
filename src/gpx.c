@@ -246,8 +246,6 @@ gpx_handle_end_element(void *_ctx, const XML_Char *name)
   if (strcmp(name, "trkpt") == 0) {
     REQUIRE_STATE(TRACKPOINT);
     /* Remove the || true if elevation is mandatory. */
-    if (ctx->got_time == false)
-      ctx->gpx->missed_time++;
     
     if ((ctx->got_lat == false) ||
         (ctx->point->latitude < -90000000000) ||
@@ -259,7 +257,7 @@ gpx_handle_end_element(void *_ctx, const XML_Char *name)
         (ctx->point->longitude > 180000000000))
       ctx->gpx->bad_long++;
     
-    if ((ctx->got_lat && ctx->got_long && (ctx->got_ele || true) && ctx->got_time) &&
+    if ((ctx->got_lat && ctx->got_long && (ctx->got_ele || true)) &&
         (ctx->point != NULL) && (ctx->point->longitude >= -180000000000) &&
         (ctx->point->longitude <= 180000000000) &&
         (ctx->point->latitude >= -90000000000) &&
