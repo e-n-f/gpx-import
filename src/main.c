@@ -25,6 +25,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <math.h>
 
 #include "gpx.h"
 #include "db.h"
@@ -64,11 +65,20 @@ main(int argc, char **argv)
         }
 
         if (prev != NULL) {
-          printf("%.7f,%.7f %.7f,%.7f\n",
-                  prev->latitude / 1000000000.0,
-                  prev->longitude / 1000000000.0,
-                  pt->latitude / 1000000000.0,
-                  pt->longitude / 1000000000.0);
+          double lat1 = prev->latitude / 1000000000.0;
+          double lon1 = prev->longitude / 1000000000.0;
+          double lat2 = pt->latitude / 1000000000.0;
+          double lon2 = pt->longitude / 1000000000.0;
+          double rat = cos((lat1 + lat2) / 2 * M_PI / 180);
+
+          double angle = atan2(lat2 - lat1, (lon2 - lon1) * rat);
+          if (angle < 0) {
+            angle += 2 * M_PI;
+          }
+
+          printf("%.7f,%.7f %.7f,%.7f 8:%d\n",
+                  lat1, lon1, lat2, lon2,
+                  (int) (angle * 256 / (2 * M_PI)));
         }
 
         prev = pt;
